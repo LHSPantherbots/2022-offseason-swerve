@@ -103,4 +103,45 @@ public final class Constants {
         public static final int kDriverControllerPort = 0;
     }
 
+    public static final class CAN_ID {
+        
+        //Drivetrain
+        public static final int DRIVE_LEFT_LEADER = 3;
+        public static final int DRIVE_LEFT_FOLLOWER = 15;
+        public static final int DRIVE_RIGHT_LEADER = 5;
+        public static final int DRIVE_RIGHT_FOLLOWER = 6;
+        
+        //Intake
+        public static final int INTAKE_ROLLER = 4;
+        public static final int COVEYOR = 8;
+
+        //Ball Tower
+        public static final int BALL_TOWER_ROLLER = 7;
+        public static final int BALL_TOWER_BELTS = 12;
+
+        //Ball Ejector
+        public static final int BALL_EJECTOR = 11;
+
+        //Climber
+        public static final int CLIMB_LEFT = 13;
+        public static final int CLIMB_RIGHT = 14;
+
+
+        // Launcher
+        public static final int LAUNCH_LEADER = 9;
+
+        public static final int LAUNCH_FOLLOWER = 10;
+
+        public static final int LAUNCH_TOPROLLER = 17;
+
+    }
+
+    public static final class PH_Channel {
+        public static final int INTAKE_A = 3;
+        public static final int INTAKE_B = 4;
+        public static final int HOOD = 0;
+        public static final int CLIMB_A = 1;
+        public static final int CLIMB_B = 2;
+    }
+
 }
