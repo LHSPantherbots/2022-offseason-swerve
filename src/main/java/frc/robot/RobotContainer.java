@@ -14,6 +14,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ImuSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LimeLight;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +39,7 @@ public class RobotContainer {
   public final static DriveSubsystem driveTrain = new DriveSubsystem(imuSubsystem);
   public final static Leds leds = new Leds();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  public final static Intake intake = new Intake(talon1);
 
 
  // The driver's controller
@@ -89,6 +91,10 @@ public class RobotContainer {
                       -m_driverController.getLeftX()
               * DriveConstants.kMaxSpeedMetersPerSecond), driveTrain))
     .whenReleased(new InstantCommand(limelight::setPipelineZero, limelight));
+
+    new JoystickButton(m_driverController, 3)
+    .whenHeld(new RunCommand(intake::intakeRollersForward, intake))
+    .whenReleased(new RunCommand (intake::intakeRollersOff, intake));
   }
 
   /**
