@@ -32,7 +32,7 @@ public class Intake extends SubsystemBase{
     //TalonSRX talonIntake = new TalonSRX(20);
     TalonSRX talonIntake;
     
-    DoubleSolenoid intakeSolenoid = new DoubleSolenoid(26, PneumaticsModuleType.REVPH, 3, 4);
+    //DoubleSolenoid intakeSolenoid = new DoubleSolenoid(26, PneumaticsModuleType.REVPH, 3, 4);
     // Solenoid intakeSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
 
   public Intake(TalonSRX tSrx) {
@@ -106,13 +106,13 @@ public class Intake extends SubsystemBase{
     public void intakeUp()
     {
         // intakeSolenoid.set(false);
-        intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
+        //intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
     public void intakeDown()
     {
         // intakeSolenoid.set(true);
-        intakeSolenoid.set(DoubleSolenoid.Value.kForward);
+        //intakeSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
     public void intakeDownnRoll(){
@@ -123,7 +123,7 @@ public class Intake extends SubsystemBase{
     public void toggleIntakePosition()
     {
         // intakeSolenoid.toggle();
-        intakeSolenoid.toggle();
+        //intakeSolenoid.toggle();
     }
 
     public void intakeRollersForward()

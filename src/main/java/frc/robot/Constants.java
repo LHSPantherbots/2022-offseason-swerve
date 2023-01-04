@@ -41,18 +41,6 @@ public final class Constants {
         public static final double kRearRightAngleZero = 180.7;
     
     
-        //public static final boolean kFrontLeftTurningEncoderReversed = false;
-        //public static final boolean kRearLeftTurningEncoderReversed = true;
-        //public static final boolean kFrontRightTurningEncoderReversed = false;
-        //public static final boolean kRearRightTurningEncoderReversed = true;
-    
-    
-    
-        //public static final boolean kFrontLeftDriveEncoderReversed = false;
-        //public static final boolean kRearLeftDriveEncoderReversed = true;
-        //public static final boolean kFrontRightDriveEncoderReversed = false;
-        //public static final boolean kRearRightDriveEncoderReversed = true;
-    
         public static final double kTrackWidth = 21.5 * 0.0254; //converts 18.5 inches to meters
         // Distance between centers of right and left wheels on robot
         public static final double kWheelBase = 21.5 * 0.0254; //converts 18.5 inches to meters
@@ -75,7 +63,7 @@ public final class Constants {
         public static final double kvVoltSecondsPerMeter = 3.16;
         public static final double kaVoltSecondsSquaredPerMeter = 0.274;
     
-        public static final double kMaxSpeedMetersPerSecond = 3;
+        public static final double kMaxSpeedMetersPerSecond = 3.5;
       }
     
       public static final class ModuleConstants {
@@ -102,5 +90,50 @@ public final class Constants {
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
     }
+
+    public static final class GamePadButtons{
+        // Basic buttons
+        public static final int A = 1;
+        public static final int B = 2;
+        public static final int X = 3;
+        public static final int Y = 4;
+        public static final int RB = 6;
+        public static final int LB = 5;
+        public static final int Select = 7;
+        public static final int Start = 8;
+        public static final int LeftJ = 9;
+        public static final int RightJ = 10;
+
+        //POV buttons
+        public static final int Up = 0;  
+        public static final int Down = 180;   
+        public static final int Left = 270;
+        public static final int Right = 90; 
+
+        //Axis
+        public static final int leftY = 1;
+        public static final int leftX = 0;
+        public static final int rightY = 5;
+        public static final int rightX = 4;
+        public static final int leftTrigger = 2;
+        public static final int rightTrigger = 3;
+    }
+
+    public static final class RIO_Channels_DIO {
+        public static final int UPPER_BEAM_BREAK = 1;
+        public static final int LOWER_BEAM_BREAK = 0;
+    }
+
+    public static final class RIO_Channels_CAN_MOTOR {
+        public static final int INTAKE = 30;
+        public static final int TOWER_FRONT_ROLLER = 32;
+        public static final int TOWER_BACK_ROLLER = 33;
+        public static final int TOWER_BELTS = 34;
+        public static final int CONVEYOR = 31;
+        public static final int LAUNCH_LEADER = 35;
+        public static final int LAUNCH_FOLLOWER = 36;
+        public static final int LAUNCH_TOPROLLER = 37;
+    }
+
 
 }

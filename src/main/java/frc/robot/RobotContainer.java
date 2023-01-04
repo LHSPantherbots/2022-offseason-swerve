@@ -7,7 +7,9 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.GamePadButtons;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.RIO_Channels_CAN_MOTOR;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
@@ -15,12 +17,15 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ImuSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.TowerSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // Talon and Pigeon needed for subsystems defined here...
-  public final static TalonSRX  talon1 = new TalonSRX(DriveConstants.kIntakeTalonPort);
+  public final static TalonSRX  talon1 = new TalonSRX(RIO_Channels_CAN_MOTOR.INTAKE);
   public final static PigeonIMU  pidgey = new PigeonIMU(talon1);
   // The robot's subsystems and commands are defined here...
   public final static ImuSubsystem imuSubsystem = new ImuSubsystem(pidgey);
@@ -40,6 +45,8 @@ public class RobotContainer {
   public final static Leds leds = new Leds();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final static Intake intake = new Intake(talon1);
+  public final static TowerSubsystem tower = new TowerSubsystem();
+  public final static Launcher launcher = new Launcher();
 
 
  // The driver's controller
@@ -68,7 +75,8 @@ public class RobotContainer {
                     * DriveConstants.kMaxSpeedMetersPerSecond,
                       -m_driverController.getLeftX()
               * DriveConstants.kMaxSpeedMetersPerSecond,
-                      -m_driverController.getRightX()
+                     // -m_driverController.getRightX()
+                     -(m_driverController.getRightTriggerAxis()-m_driverController.getLeftTriggerAxis())
               * DriveConstants.kMaxSpeedMetersPerSecond,
                       
                       true), driveTrain));
@@ -82,7 +90,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    new JoystickButton(m_driverController, 4)
+    new JoystickButton(m_driverController, GamePadButtons.Start)
+    .whileActiveOnce(new InstantCommand(driveTrain::resetAll, driveTrain));
+
+    new JoystickButton(m_driverController, GamePadButtons.Y)
     .whenPressed(new InstantCommand(limelight::ledPipeline, limelight))
     .whenPressed(new InstantCommand(limelight::setPipelineThree, limelight))
     .whileHeld(new RunCommand(() -> driveTrain.limeLightAim(
@@ -92,10 +103,40 @@ public class RobotContainer {
               * DriveConstants.kMaxSpeedMetersPerSecond), driveTrain))
     .whenReleased(new InstantCommand(limelight::setPipelineZero, limelight));
 
-    new JoystickButton(m_driverController, 3)
+    new JoystickButton(m_driverController, GamePadButtons.X)
     .whenHeld(new RunCommand(intake::intakeRollersForward, intake))
-    .whenReleased(new RunCommand (intake::intakeRollersOff, intake));
-  }
+    .whenHeld(new RunCommand(tower::autoTowerStow, tower))
+    .whenReleased(new RunCommand (intake::intakeRollersOff, intake))
+    .whenReleased(new RunCommand(tower::towerStop, tower));
+
+    new JoystickButton(m_driverController, GamePadButtons.RB)
+    .whenHeld(new RunCommand(tower::feedBallsToShooter, tower))
+    .whenReleased(new RunCommand (tower::towerStop, tower));
+
+    new POVButton(m_driverController, GamePadButtons.Up)
+    .whenPressed(new RunCommand(launcher::longTarmacShoot, launcher))
+    .whenPressed(new RunCommand(leds::red, leds));
+
+    
+    new POVButton(m_driverController, GamePadButtons.Right)
+      .whenPressed(new RunCommand(launcher::midTarmacShoot, launcher))
+      .whenPressed(new RunCommand(leds::purple, leds));
+
+    new POVButton(m_driverController, GamePadButtons.Down)
+      .whenPressed(new RunCommand(launcher::fenderHighShoot, launcher))
+      .whenPressed(new RunCommand(leds::green, leds));
+    
+    new POVButton(m_driverController, GamePadButtons.Left)
+      .whenPressed(new RunCommand(launcher::stopFlyWheel, launcher))
+      .whenReleased(new RunCommand(leds::rainbow, leds));
+
+
+
+
+}
+
+
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

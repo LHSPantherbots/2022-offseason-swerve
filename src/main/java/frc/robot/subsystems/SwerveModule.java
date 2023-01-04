@@ -5,44 +5,28 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import frc.robot.Constants;
-import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class SwerveModule {
-  private double moduleAngleOffset, moduleAngleZero = 0;
   private final CANSparkMax m_driveMotor;
   private final CANSparkMax m_turningMotor;
-
   private final RelativeEncoder m_driveEncoder;
-
   private SparkMaxPIDController m_drivePidController;
 
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
   private final CANCoder m_turningEncoder;
-  //private final CANCoderConfiguration cancoderConfig;
-
-  private final PIDController m_drivePIDController =
-      new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
-
-  //private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter);
-  private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward( 0.0, 0.26);
 
   // Using a TrapezoidProfile PIDController to allow for smooth turning
   private final ProfiledPIDController m_turningPIDController =
@@ -59,18 +43,16 @@ public class SwerveModule {
    *
    * @param driveMotorChannel ID for the drive motor.
    * @param turningMotorChannel ID for the turning motor.
+   * @param turningEncoderPort ID for the turning encoder port
+   * @param angleZero Absolute angle when module is point forward
    */
   public SwerveModule(
       int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderPort,
       double angleZero){//, // This is the absolute angle of the module pointing forward 0deg
-      //boolean driveEncoderReversed,
-      //boolean turningEncoderReversed) {
 
-    moduleAngleZero = angleZero;
-    moduleAngleOffset = moduleAngleZero; //This is for possible logic needed to adjust the zero to an offset angle
-
+ 
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
@@ -79,16 +61,12 @@ public class SwerveModule {
 
     // initialze PID controller and encoder objects
     m_drivePidController = m_driveMotor.getPIDController();
-
-
     this.m_driveEncoder = m_driveMotor.getEncoder();
 
     this.m_turningEncoder = new CANCoder(turningEncoderPort);
     this.m_turningEncoder.configMagnetOffset(-angleZero);
 
-//*********************************************** */
 
-//*
         // PID coefficients
         kP = 0.0002;//5e-5; 
         kI = 0.0;//1e-6;
@@ -117,23 +95,6 @@ public class SwerveModule {
         m_drivePidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
         m_drivePidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
 
-//************************************************************** */
-
-    // Set the distance per pulse for the drive encoder. We can simply use the
-    // distance traveled for one rotation of the wheel divided by the encoder
-    // resolution.
-    //m_driveEncoder.setDistancePerPulse(ModuleConstants.kDriveEncoderDistancePerPulse);
-
-    // Set whether drive encoder should be reversed or not
-    //m_driveEncoder.setReverseDirection(driveEncoderReversed);
-
-    // Set the distance (in this case, angle) per pulse for the turning encoder.
-    // This is the the angle through an entire rotation (2 * wpi::math::pi)
-    // divided by the encoder resolution.
-    //m_turningEncoder.setDistancePerPulse(ModuleConstants.kTurningEncoderDistancePerPulse);
-
-    // Set whether turning encoder should be reversed or not
-    //m_turningEncoder.setReverseDirection(turningEncoderReversed);
 
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
@@ -156,23 +117,20 @@ public class SwerveModule {
    * @param state Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState state) {
-    //System.out.println("Original State: " + state.toString());
-    state = SwerveModuleState.optimize(state, new Rotation2d(getModuleAngleRadians()));
-    //System.out.println("Optimized State: " + state.toString());
-    // Calculate the drive output from the drive PID controller.
-    //final var driveOutput =
-    //    driveFeedforward.calculate(state.speedMetersPerSecond) +
-    //    m_drivePIDController.calculate(getDriveEncoderVelocityMeterPerSec(), state.speedMetersPerSecond);
+    //keep modules at current state when no input is given
+    if(Math.abs(state.speedMetersPerSecond) < 0.001){
+      stop();
+      return;
+    }
 
+  
+    state = SwerveModuleState.optimize(state, new Rotation2d(getModuleAngleRadians()));
+  
     // Calculate the turning motor output from the turning PID controller.
     final var turnOutput =
         m_turningPIDController.calculate(getModuleAngleRadians(), state.angle.getRadians());
 
-    // Calculate the turning motor output from the turning PID controller.
-    //m_driveMotor.set(driveOutput);
     double motorRpm = getMotorRpmFromDriveVelocity(state.speedMetersPerSecond);
-
-//************ */
 
     if (Math.abs(state.speedMetersPerSecond)>0.07){
         m_drivePidController.setReference(motorRpm, CANSparkMax.ControlType.kSmartVelocity);
@@ -181,7 +139,7 @@ public class SwerveModule {
         m_drivePidController.setReference(0, CANSparkMax.ControlType.kSmartVelocity); // adds deadband
     }
 
-  //**************************** */
+
     m_turningMotor.set(turnOutput);
   }
 
@@ -241,6 +199,11 @@ public class SwerveModule {
 
   public double getModuleAngleRadians(){
     return getModuleAngle() * Math.PI / 180;
+  }
+
+  public void stop(){
+    m_driveMotor.set(0);
+    m_turningMotor.set(0);
   }
 
 }

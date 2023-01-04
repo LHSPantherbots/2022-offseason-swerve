@@ -6,12 +6,11 @@ package frc.robot.subsystems;
 
 
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -56,7 +55,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kRearRightTurningEncoderPort,
           DriveConstants.kRearRightAngleZero);
 
-SwerveDriveOdometry m_odometry;
+SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0));
           // The gyro sensor
   //private final Gyro m_gyro = new ADXRS450_Gyro();
 
@@ -64,8 +63,15 @@ SwerveDriveOdometry m_odometry;
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(ImuSubsystem imuSubsystem) {
     m_imuSubsystem = imuSubsystem;
-    // Odometry class for tracking robot pose
-    m_odometry = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, getYaw());
+
+    new Thread(() -> {
+      try{
+        Thread.sleep(1000);
+        zeroHeading();
+      } catch (Exception e){
+      }
+    }).start();
+    
   }
 
 
@@ -210,7 +216,10 @@ SwerveDriveOdometry m_odometry;
     return getYaw().getDegrees();
     
   }
-
+  public void resetAll(){
+    resetEncoders();
+    zeroHeading();
+  }
 
   public double getHeadingRadians() {
     return getYaw().getRadians();
