@@ -1,21 +1,12 @@
 package frc.robot.subsystems;
 
-import frc.robot.commands.*;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import frc.robot.Constants.RIO_Channels_CAN_MOTOR;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+
 
 
 public class Intake extends SubsystemBase{
@@ -32,7 +23,7 @@ public class Intake extends SubsystemBase{
     //TalonSRX talonIntake = new TalonSRX(20);
     TalonSRX talonIntake;
     
-    //DoubleSolenoid intakeSolenoid = new DoubleSolenoid(26, PneumaticsModuleType.REVPH, 3, 4);
+    DoubleSolenoid intakeSolenoid = new DoubleSolenoid(RIO_Channels_CAN_MOTOR.PH, PneumaticsModuleType.REVPH, 0, 1);
     // Solenoid intakeSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
 
   public Intake(TalonSRX tSrx) {
@@ -53,7 +44,7 @@ public class Intake extends SubsystemBase{
 
     public void run() {
         
-        talonIntake.set(ControlMode.PercentOutput, .9);
+        talonIntake.set(ControlMode.PercentOutput, .8);
     }
 
     public void stop() {
@@ -105,25 +96,30 @@ public class Intake extends SubsystemBase{
 
     public void intakeUp()
     {
-        // intakeSolenoid.set(false);
-        //intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
+        //intakeSolenoid.set(false);
+        intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
     public void intakeDown()
     {
         // intakeSolenoid.set(true);
-        //intakeSolenoid.set(DoubleSolenoid.Value.kForward);
+        intakeSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
-    public void intakeDownnRoll(){
+    public void intakeDownRoll(){
         intakeDown();
         intakeRollersForward();
+    }
+
+    public void intakeUpStop(){
+        intakeUp();
+        intakeRollersOff();
     }
 
     public void toggleIntakePosition()
     {
         // intakeSolenoid.toggle();
-        //intakeSolenoid.toggle();
+        intakeSolenoid.toggle();
     }
 
     public void intakeRollersForward()
@@ -138,7 +134,7 @@ public class Intake extends SubsystemBase{
 
     public void intakeRollersReverse()
     {
-        talonIntake.set(ControlMode.PercentOutput,-.8);
+        talonIntake.set(ControlMode.PercentOutput,-.5);
     }
 
     

@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.RIO_Channels_CAN_MOTOR;
 
@@ -20,14 +18,13 @@ public class Launcher extends SubsystemBase{
     RelativeEncoder launcherEncoder;
     RelativeEncoder tRollerEncoder;
 
-    //Solenoid hoodSolenoid = new Solenoid(26, PneumaticsModuleType.REVPH, PH_Channel.HOOD);
 
     
     
    
 
-    private SparkMaxPIDController pidController;
-    private SparkMaxPIDController pidControllerTop;
+   private SparkMaxPIDController pidController;
+   private SparkMaxPIDController pidControllerTop;
    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, allowableError;
    private double velocitySetpoint = 0.0;
    private double lastSetpoint = 3500;

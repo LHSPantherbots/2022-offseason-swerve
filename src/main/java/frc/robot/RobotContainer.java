@@ -13,6 +13,7 @@ import frc.robot.Constants.RIO_Channels_CAN_MOTOR;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.CompressorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ImuSubsystem;
@@ -47,6 +48,7 @@ public class RobotContainer {
   public final static Intake intake = new Intake(talon1);
   public final static TowerSubsystem tower = new TowerSubsystem();
   public final static Launcher launcher = new Launcher();
+  public final static CompressorSubsystem compressor = new CompressorSubsystem();
 
 
  // The driver's controller
@@ -59,6 +61,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+        //limelight.setDefaultCommand(new InstantCommand(limelight::ledOff, limelight));
 
           leds.setDefaultCommand(
               new RunCommand(() -> leds.rainbow(), leds)
@@ -104,10 +108,26 @@ public class RobotContainer {
     .whenReleased(new InstantCommand(limelight::setPipelineZero, limelight));
 
     new JoystickButton(m_driverController, GamePadButtons.X)
-    .whenHeld(new RunCommand(intake::intakeRollersForward, intake))
+    .whenHeld(new RunCommand(intake::intakeDownRoll, intake))
     .whenHeld(new RunCommand(tower::autoTowerStow, tower))
-    .whenReleased(new RunCommand (intake::intakeRollersOff, intake))
+    .whenReleased(new RunCommand (intake::intakeUpStop, intake))
     .whenReleased(new RunCommand(tower::towerStop, tower));
+
+    
+    new JoystickButton(m_driverController, GamePadButtons.A)
+    //.whenHeld(new RunCommand(intake::intakeDownRoll, intake))
+    .whenHeld(new RunCommand(tower::autoTowerStow, tower))
+    //.whenReleased(new RunCommand (intake::intakeUpStop, intake))
+    .whenReleased(new RunCommand(tower::towerStop, tower));
+
+    new JoystickButton(m_driverController, GamePadButtons.B)
+    .whenHeld(new RunCommand(intake::intakeRollersReverse, intake))
+    .whenHeld(new RunCommand(tower::ejectBalls, tower))
+    .whenReleased(new RunCommand (intake::intakeUpStop, intake))
+    .whenReleased(new RunCommand(tower::towerStop, tower));
+
+
+
 
     new JoystickButton(m_driverController, GamePadButtons.RB)
     .whenHeld(new RunCommand(tower::feedBallsToShooter, tower))

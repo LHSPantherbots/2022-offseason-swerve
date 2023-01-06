@@ -6,9 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import org.ejml.ops.ConvertMatrixData;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,6 +69,14 @@ public class TowerSubsystem extends SubsystemBase {
     towerBelts.set(.5);
     conveyor.set(.2);
   }
+
+  public void ejectBalls(){
+    towerBackRoller.set(-.5);
+    towerFrontRoller.set(-.5);
+    towerBelts.set(-.5);
+    conveyor.set(-.2);
+  }
+
 
   public void towerStop(){
     towerBackRoller.set(0.0);

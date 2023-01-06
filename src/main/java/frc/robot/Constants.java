@@ -125,6 +125,7 @@ public final class Constants {
     }
 
     public static final class RIO_Channels_CAN_MOTOR {
+        public static final int PH = 26; //Pnumatics module
         public static final int INTAKE = 30;
         public static final int TOWER_FRONT_ROLLER = 32;
         public static final int TOWER_BACK_ROLLER = 33;
